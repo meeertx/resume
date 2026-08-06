@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { useGlobalScrollLoop } from '../../hooks/useGlobalScrollLoop'
 import { ProgressBar } from '../ProgressBar'
@@ -19,6 +19,15 @@ export function Layout() {
   const progressBarRef = useRef<HTMLDivElement | null>(null)
 
   useGlobalScrollLoop(progressBarRef)
+
+  // React Router doesn't reset scroll on navigation the way a real page
+  // load does — without this, a new route opens wherever the previous
+  // page's scrollbar happened to be. useLayoutEffect (not useEffect) so
+  // this runs before paint — no visible flash of the new page rendered at
+  // the old scroll position first.
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0)
+  }, [location.pathname])
 
   return (
     <>
