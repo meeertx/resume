@@ -21,11 +21,16 @@ export default function About() {
       <div className="grid grid-cols-1 gap-16 lg:grid-cols-[minmax(0,320px)_1fr]">
         {/* Left column */}
         <div className="flex flex-col gap-8">
-          <div className="flex h-24 w-24 items-center justify-center border-[5px] border-cyan font-display text-2xl text-cyan">
-            {resumeData.masthead.name
-              .split(' ')
-              .map((word) => word[0])
-              .join('')}
+          <div className="group relative h-36 w-36 overflow-hidden border-[5px] border-cyan sm:h-40 sm:w-40">
+            <img
+              src="/mert.jpg"
+              alt={resumeData.masthead.name}
+              className="h-full w-full object-cover grayscale contrast-125 transition-[filter] duration-300 ease-brutal group-hover:grayscale-0 group-hover:contrast-100"
+            />
+            {/* Cyan duotone at rest — ties the photo into the site palette instead of
+                sitting on the page as a plain unfiltered photo. Fades out on hover,
+                paired with the grayscale removal above, to reveal the real photo. */}
+            <div className="pointer-events-none absolute inset-0 bg-cyan mix-blend-color transition-opacity duration-300 ease-brutal group-hover:opacity-0" />
           </div>
 
           <div className="flex flex-col gap-3 font-mono text-sm">
