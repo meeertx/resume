@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+@theme {
+  /* dark brutalist palette — never name a token base/sm/lg/xl, it shadows
+     the built-in font-size scale */
+  --color-void: #050505;
+  --color-panel: #0a0a0a;
+  --color-cyan: #00f5ff;
+  --color-magenta: #ff00ff;
+  --color-paper: #ffffff;
+  --color-fog: #cccccc;
+  --color-dim: #8a8a8a;
+  --color-line: #262626;
+
+  --font-mono: "Space Mono", ui-monospace, monospace;
+  --font-display: "Archivo Black", ui-sans-serif, sans-serif;
+
+  --tracking-label: 0.18em;
+  --tracking-wide: 0.28em;
+  --tracking-display: -0.01em;
+
+  /* Scroll-driven motion (the Skills page hub/nodes) is never a CSS
+     transition — it's written per-frame from JS, so it always tracks the
+     eased scroll value exactly regardless of which curve is used here.
+     These two are for hover/press feedback: --ease-brutal is the
+     deliberately-chosen pixelated/stepped house style for this site;
+     --ease-out/--ease-in-out stay available as smooth cubic-beziers for
+     the handful of places (see Skills' TechNode) where legibility during
+     motion matters more than the retro effect. */
+  --ease-brutal: steps(5, end);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-void);
+  color: var(--color-paper);
+  font-family: var(--font-mono);
+  cursor: crosshair;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Text-entry fields keep a real text cursor — a crosshair over an input
+   hides exactly where the insertion point is, which is a usability bug,
+   not a stylistic choice. */
+input,
+textarea {
+  cursor: text;
+}
+
+#root {
+  position: relative;
+}
+
+::selection {
+  background: var(--color-cyan);
+  color: var(--color-void);
+}
+
+/* Instant, not steps()'d — a keyboard user needs focus to appear the
+   moment it lands, not a few frames later. */
+:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 2px;
+}
+
+/* subtle structural grid — texture, not decoration; never moves */
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(0, 245, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 245, 255, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: page-enter 200ms var(--ease-brutal) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter {
+    animation: none;
+  }
+}
