@@ -1,0 +1,67 @@
+<!--
+  EmailJS notification template — matches the site's dark brutalist theme
+  (void #050505 / cyan #00f5ff / paper #ffffff / fog #cccccc / dim #8a8a8a /
+  line #262626). This file is a version-controlled reference; EmailJS has
+  no API for pushing template content, so paste this into the dashboard
+  manually: Email Templates → your template → Content (HTML/code view).
+
+  Variables used, all sent by src/pages/Contact.tsx's emailjs.send() call:
+  {{from_name}}  {{from_email}}  {{subject}}  {{time}}  {{message}}
+
+  Table-based layout + inline styles throughout, no external stylesheet,
+  no web fonts (a monospace system-font stack instead) — that's not a
+  stylistic downgrade, it's what actually survives Outlook/Gmail's HTML
+  sanitizing rather than silently falling back to Times New Roman.
+-->
+<div style="background-color: #050505; padding: 32px 16px; font-family: 'Courier New', Consolas, monospace;">
+  <div style="max-width: 520px; margin: 0 auto; border: 2px solid #00f5ff; background-color: #050505;">
+    <!-- Header -->
+    <div style="padding: 16px 20px; border-bottom: 2px solid #00f5ff; color: #00f5ff; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;">
+      [NEW_MESSAGE_RECEIVED]
+    </div>
+
+    <div style="padding: 24px 20px;">
+      <!-- Sender -->
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="vertical-align: top; width: 52px; padding-right: 14px;">
+            <div style="width: 40px; height: 40px; border: 2px solid #00f5ff; background-color: #0a0a0a; text-align: center; line-height: 36px; font-size: 18px;" role="img" aria-label="sender">
+              &#128100;
+            </div>
+          </td>
+          <td style="vertical-align: top;">
+            <div style="color: #ffffff; font-size: 15px; font-weight: bold;">{{from_name}}</div>
+            <div style="color: #8a8a8a; font-size: 11px; letter-spacing: 0.06em; margin-top: 2px;">{{time}}</div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Email / subject -->
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top: 18px; border-top: 1px dashed #262626; border-bottom: 1px dashed #262626;">
+        <tr>
+          <td style="padding: 12px 0 3px; color: #8a8a8a; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;">Email</td>
+        </tr>
+        <tr>
+          <td style="padding: 0 0 10px;">
+            <a href="mailto:{{from_email}}" style="color: #00f5ff; text-decoration: none; font-size: 13px;">{{from_email}}</a>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 0 0 3px; color: #8a8a8a; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;">Subject</td>
+        </tr>
+        <tr>
+          <td style="padding: 0 0 14px; color: #ffffff; font-size: 13px;">{{subject}}</td>
+        </tr>
+      </table>
+
+      <!-- Message -->
+      <div style="margin-top: 16px; color: #8a8a8a; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;">Message</div>
+      <p style="margin: 8px 0 0; color: #cccccc; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">{{message}}</p>
+    </div>
+
+    <!-- Footer -->
+    <div style="padding: 14px 20px; border-top: 2px solid #00f5ff; color: #8a8a8a; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;">
+      Mert Ürper — Contact Form
+    </div>
+  </div>
+</div>

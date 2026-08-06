@@ -72,6 +72,7 @@ function ContactForm() {
         from_email: email,
         subject: subject || 'New project inquiry',
         message,
+        time: new Date().toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }),
       })
       setStatus('success')
       setName('')

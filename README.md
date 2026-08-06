@@ -29,9 +29,12 @@ VITE_EMAILJS_PUBLIC_KEY=
 
 Get these from the [EmailJS dashboard](https://dashboard.emailjs.com/admin) (Email Services /
 Email Templates / Account → General). The template should expect `from_name`, `from_email`,
-`subject`, and `message` variables. Without these set, the form fails with a clear inline message
-pointing at direct email instead of silently doing nothing (see `EMAILJS_CONFIGURED` in
-[`src/pages/Contact.tsx`](src/pages/Contact.tsx)).
+`subject`, `time`, and `message` variables — [`docs/emailjs-template.html`](docs/emailjs-template.html)
+is the actual template HTML, styled to match the site (dark, cyan-bordered, monospace) and kept
+here as a version-controlled reference. EmailJS has no API for pushing template content, so paste
+it into the dashboard manually: Email Templates → your template → Content (code view). Without the
+env vars set, the form fails with a clear inline message pointing at direct email instead of
+silently doing nothing (see `EMAILJS_CONFIGURED` in [`src/pages/Contact.tsx`](src/pages/Contact.tsx)).
 
 **Deploying:** add the same three variables in Vercel's Project Settings → Environment Variables —
 `.env` only applies locally.
