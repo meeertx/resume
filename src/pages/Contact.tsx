@@ -1,7 +1,21 @@
+import emailjs from '@emailjs/browser'
 import { useState, type FormEvent } from 'react'
 import { Button } from '../components/ui/Button'
 import { SocialLinks } from '../components/ui/SocialLinks'
 import { resumeData } from '../data/resume'
+
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+const EMAILJS_CONFIGURED = Boolean(EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY)
+
+// Once, at module load — not per-send. @emailjs/browser@4.4.1's typed
+// Options has no privateKey field (that's a Node-SDK/REST-API concept, not
+// something the browser SDK's public API exposes), so VITE_EMAILJS_PRIVATE_KEY
+// — if set — currently goes unused. Flag if Strict Mode actually needs it.
+if (EMAILJS_CONFIGURED) {
+  emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY })
+}
 
 function CopyEmailButton() {
   const [copied, setCopied] = useState(false)
@@ -24,52 +38,101 @@ function CopyEmailButton() {
 const inputClass =
   'border-2 border-line bg-void px-4 py-3 font-mono text-sm text-paper placeholder:text-dim placeholder:italic focus:border-cyan focus:outline-none'
 
+type SendStatus = 'idle' | 'sending' | 'success' | 'error'
+
 /**
- * Looks and behaves like a contact form, but there's no backend collecting
- * it — submitting builds a mailto: link from the fields and hands off to
- * the visitor's own mail client. No third-party form service, no server,
- * nothing sent from this page.
+ * A real contact form — sends via EmailJS directly from the browser, no
+ * server of our own to run or pay for. Needs VITE_EMAILJS_SERVICE_ID/
+ * TEMPLATE_ID/PUBLIC_KEY set in .env (see .env.example); until those exist
+ * this fails with a clear inline message pointing at direct email instead
+ * of silently doing nothing.
  */
-function MailtoForm() {
+function ContactForm() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [subject, setSubject] = useState('')
   const [message, setMessage] = useState('')
+  const [status, setStatus] = useState<SendStatus>('idle')
 
-  const handleSubmit = (e: FormEvent) => {
+  const sending = status === 'sending'
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    const body = `${message}\n\n— ${name} (${email})`
-    const mailto = `mailto:${resumeData.contact.email}?subject=${encodeURIComponent(
-      subject || 'New project inquiry',
-    )}&body=${encodeURIComponent(body)}`
-    window.location.href = mailto
+
+    if (!EMAILJS_CONFIGURED) {
+      console.error('EmailJS is not configured — set VITE_EMAILJS_* in .env (see .env.example)')
+      setStatus('error')
+      return
+    }
+
+    setStatus('sending')
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        from_name: name,
+        from_email: email,
+        subject: subject || 'New project inquiry',
+        message,
+      })
+      setStatus('success')
+      setName('')
+      setEmail('')
+      setSubject('')
+      setMessage('')
+    } catch (err) {
+      console.error('EmailJS send failed', err)
+      setStatus('error')
+    }
   }
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" className={inputClass} />
       <input
         required
+        disabled={sending}
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Name"
+        className={inputClass}
+      />
+      <input
+        required
+        disabled={sending}
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Email"
         className={inputClass}
       />
-      <input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Subject" className={inputClass} />
+      <input
+        disabled={sending}
+        value={subject}
+        onChange={(e) => setSubject(e.target.value)}
+        placeholder="Subject"
+        className={inputClass}
+      />
       <textarea
         required
+        disabled={sending}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder="Message"
         rows={5}
         className={inputClass}
       />
-      <p className="font-mono text-[10px] tracking-label text-dim uppercase">
-        Opens your email client with this filled in — nothing is sent from this page.
-      </p>
-      <Button type="submit" variant="accent" className="w-full">
-        Send
+
+      {status === 'success' && (
+        <p className="font-mono text-[11px] tracking-label text-cyan uppercase">
+          Message sent — I'll get back to you soon.
+        </p>
+      )}
+      {status === 'error' && (
+        <p className="font-mono text-[11px] tracking-label text-magenta uppercase">
+          Something went wrong — email {resumeData.contact.email} directly instead.
+        </p>
+      )}
+
+      <Button type="submit" variant="accent" className="w-full" disabled={sending}>
+        {sending ? 'Sending…' : 'Send'}
       </Button>
     </form>
   )
@@ -107,7 +170,7 @@ export default function Contact() {
           </div>
         </div>
 
-        <MailtoForm />
+        <ContactForm />
       </div>
     </div>
   )

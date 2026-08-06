@@ -9,10 +9,11 @@ interface ButtonProps {
   onClick?: MouseEventHandler
   type?: 'button' | 'submit'
   className?: string
+  disabled?: boolean
 }
 
 const BASE =
-  'group inline-flex items-center justify-center gap-2 border-[3px] px-10 py-5 font-mono text-xs tracking-wide uppercase transition-all duration-200 ease-brutal active:translate-x-1 active:translate-y-1 active:shadow-none'
+  'group inline-flex items-center justify-center gap-2 border-[3px] px-10 py-5 font-mono text-xs tracking-wide uppercase transition-all duration-200 ease-brutal active:translate-x-1 active:translate-y-1 active:shadow-none disabled:pointer-events-none disabled:opacity-40'
 
 const VARIANTS: Record<NonNullable<ButtonProps['variant']>, string> = {
   primary:
@@ -22,7 +23,16 @@ const VARIANTS: Record<NonNullable<ButtonProps['variant']>, string> = {
 }
 
 /** The one brutal-button implementation — every CTA on the site goes through this. */
-export function Button({ children, variant = 'primary', to, href, onClick, type = 'button', className = '' }: ButtonProps) {
+export function Button({
+  children,
+  variant = 'primary',
+  to,
+  href,
+  onClick,
+  type = 'button',
+  className = '',
+  disabled,
+}: ButtonProps) {
   const cls = `${BASE} ${VARIANTS[variant]} ${className}`
 
   if (to) {
@@ -43,7 +53,7 @@ export function Button({ children, variant = 'primary', to, href, onClick, type 
   }
 
   return (
-    <button type={type} onClick={onClick} className={cls}>
+    <button type={type} onClick={onClick} disabled={disabled} className={cls}>
       {children}
     </button>
   )

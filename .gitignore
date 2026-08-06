@@ -8,6 +8,11 @@ dist-ssr
 # raw video sources (downloaded by scripts/fetch-assets.mjs, ~3.7MB each — not committed)
 raw/
 
+# env — real keys never committed; .env.example documents the shape
+.env
+.env.local
+.env.*.local
+
 # editor
 *.local
 .vscode/*
